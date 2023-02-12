@@ -25,7 +25,7 @@ class App extends Component {
       this.setState({ isLoading: true });
       imageLoader(query, page)
         .then(images => this.setState({ images }))
-        .finally(this.setState({ isLoading: false }));
+        .finally(()=>this.setState({ isLoading: false }));
     }
   }
 
