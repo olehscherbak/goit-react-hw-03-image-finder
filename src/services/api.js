@@ -14,13 +14,7 @@ async function imageLoader(searchedLine, pageNumber) {
     },
   };
 
-  return (await axios.get(BASE_URL, options)).data.hits;
-
-  // try {
-  //   (await axios.get(BASE_URL, options)).data.hits;
-  // } catch (error) {
-  //   console.log(error);
-  // }
+  return (await axios.get(BASE_URL, options)).data;
 }
 
 export default imageLoader;
