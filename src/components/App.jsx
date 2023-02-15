@@ -19,7 +19,7 @@ class App extends Component {
   };
 
   componentDidUpdate(_, prevState) {
-    const { page, query, totalHits } = this.state;
+    const { page, query } = this.state;
     if (
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
