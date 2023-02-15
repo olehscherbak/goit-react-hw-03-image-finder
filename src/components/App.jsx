@@ -15,13 +15,11 @@ class App extends Component {
     query: '',
     page: 1,
     status: 'idle',
+    tHits: 0,
   };
 
   componentDidUpdate(_, prevState) {
-    const { query, page } = this.state;
-    if (query === '') {
-      return toast.warn('Please try to use another search word!');
-    }
+    const { page, images, query, tHits } = this.state;
     if (
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
@@ -32,36 +30,28 @@ class App extends Component {
           const { hits, totalHits } = response;
           if (totalHits === 0) {
             this.setState({ query: '', page: 1, images: [] });
-            return toast.warn('Please try to use another search word!');
+            return;
           }
 
           this.setState(prevState => ({
             images: [...prevState.images, ...hits],
             status: 'resolved',
+            tHits: totalHits,
           }));
+
+          console.table('images', this.state.images.length);
+          console.table('hits', this.state.tHits);
         })
 
         .catch(err => {
-          this.setState({ status: 'error' });
+          this.setState({ query: '', page: 1, images: [], status: 'error' });
           console.log(err);
         });
     }
   }
 
-  // this.setState({
-  //   images: newImages,
-  //   status: 'resolved',
-  // });
-
-  // .then(newImages => {
-  //         this.setState(({ images }) => ({
-  //           images: [...images, newImages],
-  //           status: 'resolved',
-  //         }));
-  //       })
-
   changeQuery = newQuery => {
-    this.setState({ query: newQuery, page: 1, images: [] });
+    this.setState({ query: newQuery, page: 1, images: [], status: 'idle' });
   };
 
   handleClick = () => {
@@ -71,7 +61,7 @@ class App extends Component {
   };
 
   render() {
-    const { status } = this.state;
+    const { images, status, tHits } = this.state;
     if (status === 'idle') {
       return (
         <>
@@ -96,10 +86,11 @@ class App extends Component {
       <div>
         <Searchbar onSubmit={this.changeQuery} />
         <ImageGallery images={this.state.images} />
-        <Button onClick={this.handleClick} />
+        {tHits > images.length && <Button onClick={this.handleClick} />}
         {status === 'pending' && <Loader />}
         {/* <Modal /> */}
-        <ToastContainer />
+        {/* <ToastContainer />
+        toast.warn('Please try to use another search word!'); */}
       </div>
     );
   }
