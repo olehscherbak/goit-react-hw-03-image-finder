@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import { toast, ToastContainer } from 'react-toastify';
+// import { toast, ToastContainer } from 'react-toastify';
 
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
@@ -15,11 +15,11 @@ class App extends Component {
     query: '',
     page: 1,
     status: 'idle',
-    tHits: 0,
+    totalHits: 0,
   };
 
   componentDidUpdate(_, prevState) {
-    const { page, images, query, tHits } = this.state;
+    const { page, query, totalHits } = this.state;
     if (
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
@@ -28,19 +28,19 @@ class App extends Component {
       imageLoader(query, page)
         .then(response => {
           const { hits, totalHits } = response;
-          if (totalHits === 0) {
-            this.setState({ query: '', page: 1, images: [] });
-            return;
-          }
+          // if (totalHits === 0) {
+          //   this.setState({ query: '', page: 1, images: [] });
+          //   return;
+          // }
 
           this.setState(prevState => ({
             images: [...prevState.images, ...hits],
             status: 'resolved',
-            tHits: totalHits,
+            totalHits,
           }));
 
-          console.table('images', this.state.images.length);
-          console.table('hits', this.state.tHits);
+          // console.table('images', this.state.images.length);
+          // console.table('hits', this.state.tHits);
         })
 
         .catch(err => {
@@ -51,7 +51,13 @@ class App extends Component {
   }
 
   changeQuery = newQuery => {
-    this.setState({ query: newQuery, page: 1, images: [], status: 'idle' });
+    newQuery !== '' &&
+      this.setState({
+        query: newQuery,
+        page: 1,
+        images: [],
+        status: 'idle',
+      });
   };
 
   handleClick = () => {
@@ -61,7 +67,7 @@ class App extends Component {
   };
 
   render() {
-    const { images, status, tHits } = this.state;
+    const { images, status, totalHits } = this.state;
     if (status === 'idle') {
       return (
         <>
@@ -86,7 +92,7 @@ class App extends Component {
       <div>
         <Searchbar onSubmit={this.changeQuery} />
         <ImageGallery images={this.state.images} />
-        {tHits > images.length && <Button onClick={this.handleClick} />}
+        {totalHits > images.length && <Button onClick={this.handleClick} />}
         {status === 'pending' && <Loader />}
         {/* <Modal /> */}
         {/* <ToastContainer />
