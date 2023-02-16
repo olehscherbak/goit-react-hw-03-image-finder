@@ -1,5 +1,6 @@
 import { Component } from 'react';
-// import { toast, ToastContainer } from 'react-toastify';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
@@ -14,7 +15,7 @@ class App extends Component {
     images: [],
     query: '',
     page: 1,
-    status: 'idle',
+    isLoading: false,
     totalHits: 0,
   };
 
@@ -24,40 +25,34 @@ class App extends Component {
       prevState.query !== this.state.query ||
       prevState.page !== this.state.page
     ) {
-      this.setState({ status: 'pending' });
+      this.setState({ isLoading: true });
       imageLoader(query, page)
         .then(response => {
           const { hits, totalHits } = response;
-          // if (totalHits === 0) {
-          //   this.setState({ query: '', page: 1, images: [] });
-          //   return;
-          // }
-
+          if (totalHits === 0) {
+            toast.warn('No images match your query!');
+          }
           this.setState(prevState => ({
             images: [...prevState.images, ...hits],
-            status: 'resolved',
-            totalHits,
+            isLoading: false,
+            totalHits: totalHits,
           }));
-
-          // console.table('images', this.state.images.length);
-          // console.table('hits', this.state.tHits);
         })
 
         .catch(err => {
-          this.setState({ query: '', page: 1, images: [], status: 'error' });
+          this.setState({ query: '', page: 1, images: [], totalHits: 0 });
           console.log(err);
         });
     }
   }
 
   changeQuery = newQuery => {
-    newQuery !== '' &&
-      this.setState({
-        query: newQuery,
-        page: 1,
-        images: [],
-        status: 'idle',
-      });
+    if (newQuery === '') {
+      return toast.info('Please enter something to search!');
+    }
+    if (newQuery !== this.state.query) {
+      this.setState({ query: newQuery, page: 1, images: [], totalHits: 0 });
+    }
   };
 
   handleClick = () => {
@@ -67,36 +62,16 @@ class App extends Component {
   };
 
   render() {
-    const { images, status, totalHits } = this.state;
-    if (status === 'idle') {
-      return (
-        <>
-          <Searchbar onSubmit={this.changeQuery} />
-          <p style={{ textAlign: 'center' }}>input something to search</p>
-        </>
-      );
-    }
-
-    if (status === 'error') {
-      return (
-        <>
-          <Searchbar onSubmit={this.changeQuery} />
-          <p style={{ textAlign: 'center' }}>
-            oops, something went wrong, try one more time
-          </p>
-        </>
-      );
-    }
+    const { images, isLoading, totalHits } = this.state;
 
     return (
       <div>
         <Searchbar onSubmit={this.changeQuery} />
         <ImageGallery images={this.state.images} />
         {totalHits > images.length && <Button onClick={this.handleClick} />}
-        {status === 'pending' && <Loader />}
+        {isLoading && <Loader />}
         {/* <Modal /> */}
-        {/* <ToastContainer />
-        toast.warn('Please try to use another search word!'); */}
+        <ToastContainer />
       </div>
     );
   }

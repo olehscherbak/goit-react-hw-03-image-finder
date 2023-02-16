@@ -5,7 +5,6 @@ export default function Searchbar({ onSubmit }) {
   const handleSubmit = evt => {
     evt.preventDefault();
     onSubmit(evt.target.query.value.toLowerCase().trim());
-    // console.log(evt.target.query.value);
   };
 
   return (
