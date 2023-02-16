@@ -4,8 +4,14 @@ import css from './ImageGallery.module.css';
 export default function ImageGallery({ images }) {
   return (
     <ul className={css.imageGallery}>
-      {images.map(({ id, webformatURL, tags }) => (
-        <ImageGalleryItem key={id} id={id} src={webformatURL} alt={tags} />
+      {images.map(({ id, webformatURL, largeImageURL, tags }) => (
+        <ImageGalleryItem
+          key={id}
+          id={id}
+          srcSmallImg={webformatURL}
+          srcLargeImg={largeImageURL}
+          alt={tags}
+        />
       ))}
     </ul>
   );

@@ -5,10 +5,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import Searchbar from './Searchbar/Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
 import Button from './Button/Button';
-import imageLoader from '../services/api';
-
 import Loader from './Loader/Loader';
 // import Modal from './Modal/Modal';
+import imageLoader from '../services/api';
 
 class App extends Component {
   state = {
@@ -21,10 +20,7 @@ class App extends Component {
 
   componentDidUpdate(_, prevState) {
     const { page, query } = this.state;
-    if (
-      prevState.query !== this.state.query ||
-      prevState.page !== this.state.page
-    ) {
+    if (prevState.query !== query || prevState.page !== page) {
       this.setState({ isLoading: true });
       imageLoader(query, page)
         .then(response => {
@@ -38,9 +34,9 @@ class App extends Component {
             totalHits: totalHits,
           }));
         })
-
         .catch(err => {
-          this.setState({ query: '', page: 1, images: [], totalHits: 0 });
+          toast.error('Oops! Something went wrong...');
+          this.setState({ isLoading: false });
           console.log(err);
         });
     }
@@ -48,6 +44,7 @@ class App extends Component {
 
   changeQuery = newQuery => {
     if (newQuery === '') {
+      this.setState({ images: [], totalHits: 0 });
       return toast.info('Please enter something to search!');
     }
     if (newQuery !== this.state.query) {
@@ -63,7 +60,6 @@ class App extends Component {
 
   render() {
     const { images, isLoading, totalHits } = this.state;
-
     return (
       <div>
         <Searchbar onSubmit={this.changeQuery} />
