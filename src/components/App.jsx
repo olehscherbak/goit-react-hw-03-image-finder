@@ -63,8 +63,8 @@ class App extends Component {
       <div>
         <Searchbar onSubmit={this.changeQuery} />
         {images.length > 0 && <ImageGallery images={images} />}
-        {totalHits > images.length && !isLoading && (
-          <Button onClick={this.handleClick} />
+        {totalHits > images.length && (
+          <Button onClick={this.handleClick} disabled={isLoading} />
         )}
         {isLoading && <Loader />}
         <ToastContainer />
