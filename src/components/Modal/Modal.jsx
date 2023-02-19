@@ -29,7 +29,7 @@ export default class Modal extends Component {
     const modalRoot = document.querySelector('#modal-root');
     return createPortal(
       <div className={css.overlay} onClick={this.onClickModalClose}>
-        <div className={css.modal}>{this.props.children}</div>
+        <div>{this.props.children}</div>
       </div>,
       modalRoot
     );
