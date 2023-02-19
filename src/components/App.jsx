@@ -63,7 +63,7 @@ class App extends Component {
       <div>
         <Searchbar onSubmit={this.changeQuery} />
         {images.length > 0 && <ImageGallery images={images} />}
-        {(totalHits > images.length) & !isLoading && (
+        {totalHits > images.length && !isLoading && (
           <Button onClick={this.handleClick} />
         )}
         {isLoading && <Loader />}
